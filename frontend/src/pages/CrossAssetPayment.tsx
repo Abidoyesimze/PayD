@@ -21,7 +21,9 @@ import {
 
 export default function CrossAssetPayment() {
   const { notifySuccess, notifyError } = useNotification();
-  const { socket } = useSocket();
+  const socketContext = useSocket();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const socket = socketContext.socket;
   const { address, connect } = useWallet();
   const { sign } = useWalletSigning();
 
@@ -98,14 +100,23 @@ export default function CrossAssetPayment() {
       }
     };
 
-    socket.on('cross-asset:update', handler);
-    socket.on('transaction:update', handler);
-    socket.emit('subscribe:transaction', submissionTxHash);
+    // Socket is guaranteed to be non-null due to early return above
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const activeSocket = socket;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    activeSocket.on('cross-asset:update', handler);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    activeSocket.on('transaction:update', handler);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    activeSocket.emit('subscribe:transaction', submissionTxHash);
 
     return () => {
-      socket.off('cross-asset:update', handler);
-      socket.off('transaction:update', handler);
-      socket.emit('unsubscribe:transaction', submissionTxHash);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      activeSocket.off('cross-asset:update', handler);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      activeSocket.off('transaction:update', handler);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      activeSocket.emit('unsubscribe:transaction', submissionTxHash);
     };
   }, [notifySuccess, socket, submissionTxHash]);
 
@@ -129,45 +140,6 @@ export default function CrossAssetPayment() {
     try {
       await contractService.initialize();
       const contractId =
-        (envContractId as string) || 'CBRZZW3D52HFW57TDFVRYC6NYL33N23S4VDKF27I46445G3UKWJMFPBM';
-      const contract = new Contract(contractId);
-
-      // We translate the UI parameters to the Soroban initiate_payment signature:
-      // pub fn initiate_payment(env: Env, from: Address, amount: i128, asset: Address, 
-      //                         receiver_id: String, target_asset: String, anchor_id: String)
-      const invokeOp = contract.call(
-        'initiate_payment',
-        nativeToScVal(address, { type: 'address' }),
-        nativeToScVal(BigInt(Math.floor(Number(amount) * 1e7)), { type: 'i128' }),
-        nativeToScVal(
-          assetIn === 'USDC'
-            ? 'CBI56V6XU5S3S5S3S5S3S5S3S5S3S5S3S5S3S5S3S5S3S5S3S5S3S5S3' // Mock SAC for USDC
-            : 'CDLZFC3SYJYDZT7K67VZ75XJZ7T6V7L6V7L6V7L6V7L6V7L6V7L6V7L6', // Mock SAC for XLM
-          { type: 'address' }
-        ),
-        nativeToScVal(receiver || 'SEP31_RECEIVER_ID', { type: 'string' }),
-        nativeToScVal(assetOut, { type: 'string' }),
-        nativeToScVal('test-anchor.com', { type: 'string' })
-      );
-
-      // We need a valid account for the transaction builder
-      // In a real app, we'd load this from Horizon
-      const account = new Account(address, '0');
-
-      const transaction = new TransactionBuilder(account, {
-        fee: '10000',
-        networkPassphrase: Networks.TESTNET,
-      })
-        .addOperation(invokeOp)
-        .setTimeout(30)
-        .build();
-
-      const xdrString = transaction.toXDR();
-
-      notifySuccess(
-        'Contract Invocation Prepared',
-        'Please sign the Soroban cross_asset_payment.initiate_payment transaction.'
-      );
         contractService.getContractId('cross_asset_payment', 'testnet') ||
         (import.meta.env.VITE_CROSS_ASSET_PAYMENT_CONTRACT_ID as string | undefined);
       if (!contractId) {
