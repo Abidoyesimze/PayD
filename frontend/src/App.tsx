@@ -12,6 +12,7 @@ import Settings from './pages/Settings';
 import CustomReportBuilder from './pages/CustomReportBuilder';
 import CrossAssetPayment from './pages/CrossAssetPayment';
 import TransactionHistory from './pages/TransactionHistory';
+import VestingEscrow from './pages/VestingEscrow';
 import RevenueSplitDashboard from './pages/RevenueSplitDashboard';
 
 import EmployeePortal from './pages/EmployeePortal';
@@ -134,7 +135,7 @@ function App() {
         <Route
           path="/settings"
           element={
-            <ErrorBoundary fallback={<ErrorFallback onReset={() => {}} />}>
+            <ErrorBoundary fallback={<ErrorFallback onReset={() => { }} />}>
               <Settings />
             </ErrorBoundary>
           }
@@ -142,7 +143,7 @@ function App() {
         <Route
           path="/help"
           element={
-            <ErrorBoundary fallback={<ErrorFallback onReset={() => {}} />}>
+            <ErrorBoundary fallback={<ErrorFallback onReset={() => { }} />}>
               <HelpCenter />
             </ErrorBoundary>
           }
@@ -150,7 +151,7 @@ function App() {
         <Route
           path="/cross-asset-payment"
           element={
-            <ErrorBoundary fallback={<ErrorFallback onReset={() => {}} />}>
+            <ErrorBoundary fallback={<ErrorFallback onReset={() => { }} />}>
               <CrossAssetPayment />
             </ErrorBoundary>
           }
@@ -158,12 +159,16 @@ function App() {
         <Route
           path="/transactions"
           element={
-            <ErrorBoundary fallback={<ErrorFallback onReset={() => {}} />}>
+            <ErrorBoundary fallback={<ErrorFallback onReset={() => { }} />}>
               <TransactionHistory />
             </ErrorBoundary>
           }
         />
         <Route
+          path="/vesting"
+          element={
+            <ErrorBoundary fallback={<ErrorFallback onReset={() => { }} />}>
+              <VestingEscrow />
           path="/revenue-split"
           element={
             <ErrorBoundary fallback={<ErrorFallback onReset={() => {}} />}>
