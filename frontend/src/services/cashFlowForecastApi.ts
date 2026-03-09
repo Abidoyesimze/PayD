@@ -134,7 +134,10 @@ export const getForecast = async (params: ForecastParams): Promise<CashFlowForec
  */
 export const getHistoricalData = async (
   monthsBack?: number
-): Promise<{ historical: HistoricalPayrollData[]; averages: { weekly: number; biweekly: number; monthly: number } }> => {
+): Promise<{
+  historical: HistoricalPayrollData[];
+  averages: { weekly: number; biweekly: number; monthly: number };
+}> => {
   try {
     const response = await axios.get<HistoricalDataResponse>(
       `${API_BASE_URL}/api/cash-flow/historical`,
@@ -171,7 +174,9 @@ export const getHistoricalData = async (
 /**
  * Get upcoming scheduled payroll projections
  */
-export const getProjections = async (forecastDays?: number): Promise<UpcomingPayrollProjection[]> => {
+export const getProjections = async (
+  forecastDays?: number
+): Promise<UpcomingPayrollProjection[]> => {
   try {
     const response = await axios.get<ProjectionsResponse>(
       `${API_BASE_URL}/api/cash-flow/projections`,
@@ -208,7 +213,9 @@ export const getProjections = async (forecastDays?: number): Promise<UpcomingPay
 /**
  * Get budget alerts
  */
-export const getAlerts = async (params: ForecastParams): Promise<{
+export const getAlerts = async (
+  params: ForecastParams
+): Promise<{
   alerts: BudgetAlert[];
   summary: { totalAlerts: number; criticalAlerts: number; warningAlerts: number };
 }> => {

@@ -68,9 +68,7 @@ export default function CashFlowForecast() {
       setAlerts(alertsData.alerts);
       notifySuccess('Cash flow forecast updated');
     } catch (error) {
-      notifyError(
-        error instanceof Error ? error.message : 'Failed to load cash flow forecast'
-      );
+      notifyError(error instanceof Error ? error.message : 'Failed to load cash flow forecast');
     } finally {
       setIsLoading(false);
     }
@@ -410,7 +408,9 @@ export default function CashFlowForecast() {
         </>
       ) : (
         <div className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 rounded-xl p-12 text-center">
-          <p className="text-zinc-400">Enter distribution account and asset issuer to load forecast</p>
+          <p className="text-zinc-400">
+            Enter distribution account and asset issuer to load forecast
+          </p>
         </div>
       )}
     </div>
