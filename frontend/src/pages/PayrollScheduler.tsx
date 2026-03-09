@@ -315,8 +315,10 @@ export default function PayrollScheduler() {
           <Heading as="h1" size="lg" weight="bold" addlClassName="mb-2 tracking-tight">
             {/* eslint-disable-next-line @typescript-eslint/no-unsafe-call */}
             {t('payroll.title', 'Workforce')}{' '}
-            {/* eslint-disable-next-line @typescript-eslint/no-unsafe-call */}
-            <span className="text-accent">{t('payroll.titleHighlight', 'Scheduler')}</span>
+            <span className="text-accent">
+              {/* eslint-disable-next-line @typescript-eslint/no-unsafe-call */}
+              {t('payroll.titleHighlight', 'Scheduler')}
+            </span>
           </Heading>
           <Text
             as="p"
