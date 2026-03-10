@@ -28,6 +28,18 @@ interface EmployeeItem {
   status?: 'Active' | 'Inactive';
 }
 
+// Shape of an employee record returned by the backend API
+interface EmployeeApiItem {
+  id: number | string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  position?: string;
+  job_title?: string;
+  wallet_address?: string;
+  status?: string;
+}
+
 const initialFormState: EmployeeFormState = {
   fullName: '',
   walletAddress: '',
@@ -47,7 +59,7 @@ export default function EmployeeEntry() {
     walletAddress?: string;
     employeeName?: string;
   } | null>(null);
-  
+
   const { notifySuccess } = useNotification();
   const { saving, lastSaved, loadSavedData } = useAutosave<EmployeeFormState>(
     'employee-entry-draft',
@@ -58,15 +70,17 @@ export default function EmployeeEntry() {
   const fetchEmployees = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/employees');
+      const response = await api.get<{ data: EmployeeApiItem[]; pagination: unknown }>(
+        '/employees'
+      );
       // Backend returns { data: [...], pagination: {...} }
-      const mapped = response.data.data.map((emp: any) => ({
+      const mapped: EmployeeItem[] = response.data.data.map((emp) => ({
         id: String(emp.id),
         name: `${emp.first_name} ${emp.last_name}`,
         email: emp.email,
-        position: emp.position || emp.job_title || 'Employee',
+        position: emp.position ?? emp.job_title ?? 'Employee',
         wallet: emp.wallet_address,
-        status: emp.status === 'active' ? 'Active' : 'Inactive',
+        status: emp.status === 'active' ? ('Active' as const) : ('Inactive' as const),
       }));
       setEmployees(mapped);
     } catch (error) {
@@ -77,7 +91,7 @@ export default function EmployeeEntry() {
   };
 
   useEffect(() => {
-    fetchEmployees();
+    void fetchEmployees();
   }, []);
 
   useEffect(() => {
@@ -124,7 +138,7 @@ export default function EmployeeEntry() {
 
     try {
       await api.post('/employees', payload);
-      
+
       notifySuccess(
         `${formData.fullName} added successfully!`,
         generatedWallet ? 'A new Stellar wallet was generated for this employee.' : undefined
@@ -141,7 +155,7 @@ export default function EmployeeEntry() {
 
       // Reset form and refresh list
       setFormData(initialFormState);
-      fetchEmployees();
+      void fetchEmployees();
     } catch (error) {
       console.error('Failed to add employee:', error);
     }
@@ -235,7 +249,9 @@ export default function EmployeeEntry() {
 
         <Card>
           <form
-            onSubmit={handleSubmit}
+            onSubmit={(e) => {
+              void handleSubmit(e);
+            }}
             style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
           >
             <Input
@@ -274,7 +290,9 @@ export default function EmployeeEntry() {
               fieldSize="md"
               label="Role"
               value={formData.role}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleSelectChange('role', e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                handleSelectChange('role', e.target.value)
+              }
             >
               <option value="contractor">Contractor</option>
               <option value="full-time">Full Time</option>
@@ -285,7 +303,9 @@ export default function EmployeeEntry() {
               fieldSize="md"
               label="Preferred Currency"
               value={formData.currency}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleSelectChange('currency', e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                handleSelectChange('currency', e.target.value)
+              }
             >
               <option value="USDC">USDC</option>
               <option value="XLM">XLM</option>
