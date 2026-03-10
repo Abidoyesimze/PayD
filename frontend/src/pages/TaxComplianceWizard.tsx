@@ -514,7 +514,7 @@ const TaxComplianceWizard: React.FC = () => {
               <button
                 className="py-2 px-6 rounded-lg bg-accent text-bg font-bold text-sm tracking-wide hover:brightness-110 shadow-lg shadow-accent/20 transition-all"
                 onClick={() => {
-                  handleCalculatePreview();
+                  void handleCalculatePreview();
                 }}
                 disabled={isLoading}
               >
