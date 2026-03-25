@@ -73,13 +73,21 @@ function normalizeBaseUrl(url: string): string {
   return url.replace(/\/+$/, '');
 }
 
+function payrollAuthHeaders(): Record<string, string> {
+  if (typeof localStorage === 'undefined') return {};
+  const token = localStorage.getItem('payd_auth_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+/** organizationId is ignored; runs are scoped by the signed-in employer JWT. */
 export async function fetchPayrollRuns(
-  organizationId: number,
+  _organizationId: number,
   page = 1,
   limit = 20
 ): Promise<{ data: PayrollRunRecord[]; total: number }> {
   const response = await fetch(
-    `${normalizeBaseUrl(API_BASE_URL)}/api/v1/payroll-bonus/runs?organizationId=${organizationId}&page=${page}&limit=${limit}`
+    `${normalizeBaseUrl(API_BASE_URL)}/api/v1/payroll-bonus/runs?page=${page}&limit=${limit}`,
+    { headers: payrollAuthHeaders() }
   );
 
   if (!response.ok) {
@@ -92,7 +100,8 @@ export async function fetchPayrollRuns(
 
 export async function fetchPayrollRunSummary(runId: number): Promise<PayrollRunSummary> {
   const response = await fetch(
-    `${normalizeBaseUrl(API_BASE_URL)}/api/v1/payroll-bonus/runs/${runId}`
+    `${normalizeBaseUrl(API_BASE_URL)}/api/v1/payroll-bonus/runs/${runId}`,
+    { headers: payrollAuthHeaders() }
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch payroll run summary (${response.status})`);

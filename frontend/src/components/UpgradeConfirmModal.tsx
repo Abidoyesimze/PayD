@@ -41,6 +41,8 @@ import {
   cancelUpgrade,
 } from '../services/contractUpgrade';
 import { useNotification } from '../hooks/useNotification';
+import { ContractErrorPanel } from './ContractErrorPanel';
+import { parseContractError } from '../utils/contractErrorParser';
 
 // ---------------------------------------------------------------------------
 // Style constants (consistent with AdminPanel.tsx)
@@ -887,9 +889,13 @@ export default function UpgradeConfirmModal({
                   The upgrade did not complete successfully.
                 </p>
               </div>
-              <div className="w-full p-4 bg-red-500/5 border border-red-500/30 rounded-xl">
-                <p className="text-xs text-red-400 break-words">{modal.error}</p>
+              <div className="w-full">
+                <ContractErrorPanel
+                  error={parseContractError(undefined, modal.error)}
+                  title="Upgrade Simulation / Execution Error"
+                />
               </div>
+
               <div className="flex gap-3 w-full">
                 <button
                   onClick={onClose}
