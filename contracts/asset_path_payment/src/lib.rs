@@ -103,7 +103,7 @@ impl AssetPathPaymentContract {
     /// Initialize the contract with an admin address
     pub fn init(env: Env, admin: Address) {
         if env.storage().persistent().has(&DataKey::Admin) {
-            panic!("{}", PathPaymentError::AlreadyInitialized);
+            panic!("Already initialized");
         }
         env.storage().persistent().set(&DataKey::Admin, &admin);
         env.storage().persistent().set(&DataKey::PaymentCount, &0u64);
@@ -194,19 +194,15 @@ impl AssetPathPaymentContract {
             TEMPORARY_TTL_EXTEND_TO,
         );
 
-        // Emit initiation event
-        env.events().publish(
-            (symbol_short!("pay_init"), count),
-            PathPaymentInitiated {
-                payment_id: count,
-                from,
-                to,
-                source_asset,
-                dest_asset,
-                source_amount,
-                dest_min_amount,
-            },
-        );
+        PathPaymentInitiated {
+            payment_id: count,
+            from,
+            to,
+            source_asset,
+            dest_asset,
+            source_amount,
+            dest_min_amount,
+        };
 
         Ok(count)
     }
@@ -240,15 +236,12 @@ impl AssetPathPaymentContract {
             record.partial_failure = true;
             env.storage().temporary().set(&key, &record);
             
-            env.events().publish(
-                (symbol_short!("pay_fail"), payment_id),
-                PathPaymentFailed {
-                    payment_id,
-                    error_code: PathPaymentError::SlippageExceeded as u32,
-                    error_message: String::from_str(&env, "Slippage exceeded"),
-                    partial_failure: true,
-                },
-            );
+            PathPaymentFailed {
+                payment_id,
+                error_code: PathPaymentError::SlippageExceeded as u32,
+                error_message: String::from_str(&env, "Slippage exceeded"),
+                partial_failure: true,
+            };
             
             return Err(PathPaymentError::SlippageExceeded);
         }
@@ -265,14 +258,11 @@ impl AssetPathPaymentContract {
             TEMPORARY_TTL_EXTEND_TO,
         );
 
-        env.events().publish(
-            (symbol_short!("pay_comp"), payment_id),
-            PathPaymentCompleted {
-                payment_id,
-                actual_source_amount,
-                actual_dest_amount,
-            },
-        );
+        PathPaymentCompleted {
+            payment_id,
+            actual_source_amount,
+            actual_dest_amount,
+        };
 
         Ok(())
     }
@@ -303,15 +293,12 @@ impl AssetPathPaymentContract {
 
         env.storage().temporary().set(&key, &record);
 
-        env.events().publish(
-            (symbol_short!("pay_fail"), payment_id),
-            PathPaymentFailed {
-                payment_id,
-                error_code,
-                error_message,
-                partial_failure,
-            },
-        );
+        PathPaymentFailed {
+            payment_id,
+            error_code,
+            error_message,
+            partial_failure,
+        };
 
         Ok(())
     }

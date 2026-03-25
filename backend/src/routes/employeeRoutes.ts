@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { employeeController } from '../controllers/employeeController.js';
 import authenticateJWT from '../middlewares/auth.js';
 import { authorizeRoles, isolateOrganization } from '../middlewares/rbac.js';
+import { requireTenantContext } from '../middleware/tenantContext.js';
 import { require2FAIfWalletUpdate } from '../middlewares/require2faIfWalletUpdate.js';
 
 const router = Router();
@@ -15,6 +16,8 @@ const router = Router();
 
 // Apply authentication to all employee routes
 router.use(authenticateJWT);
+// Enforce tenant context for all employee routes
+router.use(requireTenantContext);
 
 /**
  * @swagger
