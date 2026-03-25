@@ -137,7 +137,9 @@ export default function TransactionHistory() {
           <button
             onClick={() => setShowFilters((prev) => !prev)}
             className={`px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-all ${
-              showFilters ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-hi text-text border border-hi hover:border-muted'
+              showFilters
+                ? 'bg-accent text-bg shadow-lg shadow-accent/20'
+                : 'bg-surface-hi text-text border border-hi hover:border-muted'
             }`}
           >
             <Filter size={18} />
@@ -149,9 +151,11 @@ export default function TransactionHistory() {
       {showFilters && (
         <div className="card glass noise mb-6 p-6 animate-fadeUp">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-muted">Advanced Filters</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-muted">
+              Advanced Filters
+            </h2>
             {activeFilterCount > 0 && (
-              <button 
+              <button
                 onClick={resetFilters}
                 className="text-[10px] font-bold uppercase tracking-widest text-danger hover:underline flex items-center gap-1.5"
               >
@@ -160,10 +164,12 @@ export default function TransactionHistory() {
               </button>
             )}
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">Search</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">
+                Search
+              </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted w-4 h-4" />
                 <input
@@ -178,10 +184,14 @@ export default function TransactionHistory() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">Status</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">
+                Status
+              </label>
               <select
                 value={filters.status}
-                onChange={(event) => setFilters((prev) => ({ ...prev, status: event.target.value }))}
+                onChange={(event) =>
+                  setFilters((prev) => ({ ...prev, status: event.target.value }))
+                }
                 className="w-full bg-surface/50 border border-hi rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent/50 focus:bg-accent/5 transition-all appearance-none"
               >
                 <option value="">All Statuses</option>
@@ -192,7 +202,9 @@ export default function TransactionHistory() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">Employee</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">
+                Employee
+              </label>
               <input
                 value={filters.employee}
                 onChange={(event) =>
@@ -204,7 +216,9 @@ export default function TransactionHistory() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">Asset</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">
+                Asset
+              </label>
               <input
                 value={filters.asset}
                 onChange={(event) => setFilters((prev) => ({ ...prev, asset: event.target.value }))}
@@ -214,7 +228,9 @@ export default function TransactionHistory() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">Start Date</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">
+                Start Date
+              </label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted w-4 h-4" />
                 <input
@@ -229,7 +245,9 @@ export default function TransactionHistory() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">End Date</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-muted ml-1">
+                End Date
+              </label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted w-4 h-4" />
                 <input
@@ -248,7 +266,11 @@ export default function TransactionHistory() {
 
       <div className="card glass noise flex-1 p-0 overflow-hidden">
         <div className="p-6">
-          {error ? <p className="text-sm text-danger mb-4 font-medium px-4 py-2 bg-danger/10 border border-danger/20 rounded-lg">{error}</p> : null}
+          {error ? (
+            <p className="text-sm text-danger mb-4 font-medium px-4 py-2 bg-danger/10 border border-danger/20 rounded-lg">
+              {error}
+            </p>
+          ) : null}
           {isLoading ? <TimelineSkeleton /> : null}
 
           {!isLoading && items.length === 0 ? (
@@ -283,13 +305,19 @@ export default function TransactionHistory() {
                       {new Date(item.createdAt).toLocaleString()}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between items-start gap-4">
                     <div>
-                      <p className="text-base font-bold text-text group-hover:text-accent transition-colors">{item.label}</p>
+                      <p className="text-base font-bold text-text group-hover:text-accent transition-colors">
+                        {item.label}
+                      </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-[10px] font-bold text-muted uppercase tracking-widest">Actor:</span>
-                        <span className="text-xs font-mono text-text bg-surface px-1.5 py-0.5 rounded border border-hi">{item.actor}</span>
+                        <span className="text-[10px] font-bold text-muted uppercase tracking-widest">
+                          Actor:
+                        </span>
+                        <span className="text-xs font-mono text-text bg-surface px-1.5 py-0.5 rounded border border-hi">
+                          {item.actor}
+                        </span>
                       </div>
                     </div>
                     <div className="text-right">
@@ -298,13 +326,15 @@ export default function TransactionHistory() {
                       </p>
                     </div>
                   </div>
-                  
+
                   {item.txHash ? (
                     <div className="mt-4 pt-4 border-t border-hi/50 flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-muted truncate max-w-[70%]">{item.txHash}</span>
-                      <a 
-                        href={`https://stellar.expert/explorer/public/tx/${item.txHash}`} 
-                        target="_blank" 
+                      <span className="text-[10px] font-mono text-muted truncate max-w-[70%]">
+                        {item.txHash}
+                      </span>
+                      <a
+                        href={`https://stellar.expert/explorer/public/tx/${item.txHash}`}
+                        target="_blank"
                         rel="noreferrer"
                         className="text-[10px] font-bold text-accent hover:underline uppercase tracking-widest"
                       >
