@@ -71,7 +71,8 @@ export class SlowQueryMonitorService {
 
   private constructor() {
     // Start periodic slow query rate check
-    setInterval(() => this.checkSlowQueryRate(), 30000); // Every 30 seconds
+    const interval = setInterval(() => this.checkSlowQueryRate(), 30000); // Every 30 seconds
+    interval.unref();
   }
 
   static getInstance(): SlowQueryMonitorService {

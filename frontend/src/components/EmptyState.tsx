@@ -1,6 +1,7 @@
 import React from 'react';
-import { ArrowRight, InboxIcon } from 'lucide-react';
+import { InboxIcon } from 'lucide-react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { ArrowButton } from './common/Button';
 
 export type EmptyStateIllustration = 'employees' | 'transactions' | 'reports' | 'search';
 
@@ -193,18 +194,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           )}
 
           {secondaryAction && (
-            <button
+            <ArrowButton
               onClick={secondaryAction.onClick}
-              className="group inline-flex items-center gap-1.5 rounded-md px-1 py-1 text-sm font-semibold text-[var(--accent)] hover:underline hover:underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-              type="button"
+              className="text-sm hover:underline hover:underline-offset-4"
             >
               {secondaryAction.label}
-              <ArrowRight
-                size={16}
-                aria-hidden="true"
-                className="transition-transform motion-safe:group-hover:translate-x-0.5"
-              />
-            </button>
+            </ArrowButton>
           )}
         </div>
       )}

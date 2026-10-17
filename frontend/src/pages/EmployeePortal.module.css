@@ -4,7 +4,11 @@
 .balanceCard {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent) 0%, color-mix(in srgb, var(--accent2) 8%, transparent) 100%);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 8%, transparent) 0%,
+    color-mix(in srgb, var(--accent2) 8%, transparent) 100%
+  );
   border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
   border-radius: 20px;
   padding: 32px;
@@ -17,7 +21,11 @@
   right: -30%;
   width: 60%;
   height: 200%;
-  background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 70%);
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--accent) 6%, transparent) 0%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 
@@ -28,7 +36,11 @@
   left: -20%;
   width: 50%;
   height: 200%;
-  background: radial-gradient(ellipse, color-mix(in srgb, var(--accent2) 4%, transparent) 0%, transparent 70%);
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--accent2) 4%, transparent) 0%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 
@@ -582,4 +594,11 @@
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .refreshSpin,
+  .skeleton {
+    animation: none !important;
+  }
 }

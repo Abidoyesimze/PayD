@@ -55,16 +55,18 @@ export const PayrollScheduleForm: React.FC = () => {
   if (isSaved) {
     return (
       <div className="space-y-6">
-        <div className="bg-green-50 text-green-800 p-4 rounded-md border border-green-200">
-          <h3 className="font-semibold text-lg">{t('schedule.scheduleActivated')}</h3>
-          <p>{t('schedule.scheduleActivatedDescription')}</p>
+        <div className="bg-(--success)/10 text-(--text) p-5 rounded-2xl border border-(--success)/30 flex flex-col gap-1">
+          <h3 className="font-extrabold text-base text-(--success)">
+            {t('schedule.scheduleActivated')}
+          </h3>
+          <p className="text-sm text-(--muted)">{t('schedule.scheduleActivatedDescription')}</p>
         </div>
         <div className="max-w-2xl">
           <ScheduleSummaryCard {...formData} />
         </div>
         <button
           onClick={() => setIsSaved(false)}
-          className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          className="mt-2 rounded-full bg-(--accent) text-(--on-accent) px-6 py-2.5 text-sm font-bold hover:brightness-110 shadow-sm transition"
         >
           {t('schedule.createAnother')}
         </button>
@@ -79,33 +81,35 @@ export const PayrollScheduleForm: React.FC = () => {
       }}
       className="space-y-8 max-w-4xl"
     >
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-6">{t('schedule.payrollScheduleConfiguration')}</h2>
+      <div className="bg-(--surface) shadow-sm border border-(--border-hi) rounded-2xl p-6 md:p-8">
+        <h2 className="text-xl font-extrabold tracking-tight text-(--text) mb-6">
+          {t('schedule.payrollScheduleConfiguration')}
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="col-span-2 md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t('schedule.payrollName')} <span className="text-red-500">*</span>
+            <label className="block text-xs font-bold uppercase tracking-wider text-(--muted) mb-2">
+              {t('schedule.payrollName')} <span className="text-(--danger)">*</span>
             </label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-xl border border-(--border-hi) bg-(--bg) px-3.5 py-2.5 text-sm text-(--text) shadow-sm transition placeholder:text-(--muted) focus:border-(--accent) focus:outline-none focus:ring-2 focus:ring-(--accent)/20"
               placeholder={t('schedule.payrollNamePlaceholder')}
             />
           </div>
 
           <div className="col-span-2 md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-(--muted) mb-2">
               {t('schedule.employeeGroup')}
             </label>
             <select
               name="group"
               value={formData.group}
               onChange={handleChange}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-xl border border-(--border-hi) bg-(--bg) px-3.5 py-2.5 text-sm text-(--text) shadow-sm transition focus:border-(--accent) focus:outline-none focus:ring-2 focus:ring-(--accent)/20"
             >
               <option value="all">{t('schedule.groupAllEmployees')}</option>
               <option value="full-time">{t('schedule.groupFullTimeOnly')}</option>
@@ -115,8 +119,8 @@ export const PayrollScheduleForm: React.FC = () => {
           </div>
 
           <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              {t('schedule.scheduleFrequency')} <span className="text-red-500">*</span>
+            <label className="block text-xs font-bold uppercase tracking-wider text-(--muted) mb-3">
+              {t('schedule.scheduleFrequency')} <span className="text-(--danger)">*</span>
             </label>
             <ScheduleFrequencySelector
               value={formData.frequency}
@@ -125,21 +129,21 @@ export const PayrollScheduleForm: React.FC = () => {
           </div>
 
           <div className="col-span-2 md:col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t('schedule.startDate')} <span className="text-red-500">*</span>
+            <label className="block text-xs font-bold uppercase tracking-wider text-(--muted) mb-2">
+              {t('schedule.startDate')} <span className="text-(--danger)">*</span>
             </label>
             <input
               type="date"
               name="startDate"
               value={formData.startDate}
               onChange={handleChange}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="w-full rounded-xl border border-(--border-hi) bg-(--bg) px-3.5 py-2.5 text-sm text-(--text) shadow-sm transition focus:border-(--accent) focus:outline-none focus:ring-2 focus:ring-(--accent)/20"
             />
           </div>
 
           <div className="col-span-2 md:col-span-1 grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-(--muted) mb-2">
                 {t('schedule.executionTime')}
               </label>
               <input
@@ -147,18 +151,18 @@ export const PayrollScheduleForm: React.FC = () => {
                 name="time"
                 value={formData.time}
                 onChange={handleChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-(--border-hi) bg-(--bg) px-3.5 py-2.5 text-sm text-(--text) shadow-sm transition focus:border-(--accent) focus:outline-none focus:ring-2 focus:ring-(--accent)/20"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-(--muted) mb-2">
                 {t('schedule.timezone')}
               </label>
               <select
                 name="timezone"
                 value={formData.timezone}
                 onChange={handleChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-(--border-hi) bg-(--bg) px-3.5 py-2.5 text-sm text-(--text) shadow-sm transition focus:border-(--accent) focus:outline-none focus:ring-2 focus:ring-(--accent)/20"
               >
                 <option value="UTC">UTC</option>
                 <option value="America/New_York">EST</option>
@@ -169,13 +173,13 @@ export const PayrollScheduleForm: React.FC = () => {
           </div>
 
           <div className="col-span-2">
-            <label className="flex items-center text-sm font-medium text-gray-700">
+            <label className="flex items-center text-sm font-medium text-(--text) cursor-pointer select-none">
               <input
                 type="checkbox"
                 name="notifyEmail"
                 checked={formData.notifyEmail}
                 onChange={handleChange}
-                className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 mr-2"
+                className="rounded border-(--border-hi) text-(--accent) focus:ring-(--accent) mr-2.5"
               />
               {t('schedule.sendNotificationsOnExecution')}
             </label>
@@ -192,17 +196,17 @@ export const PayrollScheduleForm: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex justify-end pt-2">
+      <div className="flex justify-end gap-3 pt-2">
         <button
           type="button"
-          className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 mr-4"
+          className="rounded-full border border-(--border-hi) bg-(--surface) text-(--text) px-5 py-2.5 text-sm font-semibold hover:bg-(--surface-hi) transition shadow-sm"
         >
           {t('common.cancel')}
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center"
+          className="rounded-full bg-(--accent) text-(--on-accent) px-7 py-2.5 text-sm font-bold hover:brightness-110 disabled:opacity-50 transition shadow-sm inline-flex items-center"
         >
           {isLoading ? (
             <svg

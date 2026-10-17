@@ -40,9 +40,9 @@ export const JurisdictionComplianceReportView: React.FC<Props> = ({ organization
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchJurisdictionComplianceReport(organizationId)
+    (fetchJurisdictionComplianceReport(organizationId) as Promise<{ data?: ReportData[] }>)
       .then((res) => {
-        setReportData(res.data?.[0] as ReportData);
+        setReportData(res.data?.[0] ?? null);
         setLoading(false);
       })
       .catch((err: Error) => {
@@ -51,55 +51,94 @@ export const JurisdictionComplianceReportView: React.FC<Props> = ({ organization
       });
   }, [organizationId]);
 
-  if (loading) return <div>Loading jurisdiction compliance report...</div>;
-  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
-  if (!reportData) return <div>No report data available.</div>;
+  if (loading) {
+    return (
+      <div className="p-6 text-sm text-[var(--muted)] animate-pulse">
+        Loading jurisdiction compliance report...
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-[var(--danger)] text-sm">
+        Error: {error}
+      </div>
+    );
+  }
+  if (!reportData) {
+    return (
+      <div className="p-6 text-sm text-[var(--muted)]">
+        No report data available.
+      </div>
+    );
+  }
 
   return (
-    <div className="jurisdiction-compliance-report" style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h2>Jurisdiction Compliance Report</h2>
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-        <div style={{ background: '#f5f5f5', padding: '15px', borderRadius: '8px' }}>
-          <h4>Total Tax Withheld</h4>
-          <p style={{ fontSize: '20px', fontWeight: 'bold' }}>${reportData.summary?.totalWithheld ?? 0}</p>
+    <div className="jurisdiction-compliance-report rounded-2xl border border-[var(--border-hi)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] text-[var(--text)]">
+      <h2 className="text-xl font-bold font-[var(--font-head)] tracking-tight text-[var(--text)] mb-6">
+        Jurisdiction Compliance Report
+      </h2>
+      <div className="grid gap-4 sm:grid-cols-2 mb-6">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-hi)] p-4">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">Total Tax Withheld</h4>
+          <p className="text-2xl font-black text-[var(--text)] font-[var(--font-head)] mt-1">
+            ${reportData.summary?.totalWithheld ?? 0}
+          </p>
         </div>
-        <div style={{ background: '#f5f5f5', padding: '15px', borderRadius: '8px' }}>
-          <h4>Pending Remittance</h4>
-          <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#d9534f' }}>${reportData.summary?.totalPending ?? 0}</p>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-hi)] p-4">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--muted)]">Pending Remittance</h4>
+          <p className="text-2xl font-black text-[var(--danger)] font-[var(--font-head)] mt-1">
+            ${reportData.summary?.totalPending ?? 0}
+          </p>
         </div>
       </div>
 
-      <h3>Jurisdictions</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-        <thead>
-          <tr style={{ background: '#eee', textAlign: 'left' }}>
-            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Jurisdiction</th>
-            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Withheld</th>
-            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Remitted</th>
-            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Pending</th>
-            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reportData.jurisdictions.map((j: any) => (
-            <tr key={j.jurisdiction}>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>{j.jurisdiction}</td>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>${j.totalWithheld}</td>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>${j.totalRemitted}</td>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>${j.pendingRemittance}</td>
-              <td style={{ padding: '8px', border: '1px solid #ddd' }}>{j.complianceStatus}</td>
+      <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--muted)] mb-3">
+        Jurisdictions
+      </h3>
+      <div className="overflow-x-auto rounded-xl border border-[var(--border)] mb-6">
+        <table className="w-full text-left text-sm border-collapse">
+          <thead>
+            <tr className="border-b border-[var(--border)] bg-[var(--surface-hi)] text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
+              <th scope="col" className="p-3">Jurisdiction</th>
+              <th scope="col" className="p-3">Withheld</th>
+              <th scope="col" className="p-3">Remitted</th>
+              <th scope="col" className="p-3">Pending</th>
+              <th scope="col" className="p-3">Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-[var(--border)]">
+            {reportData.jurisdictions?.map((j: JurisdictionData) => (
+              <tr key={j.jurisdiction} className="hover:bg-[var(--surface-hi)]/50 transition-colors">
+                <td className="p-3 font-semibold text-[var(--text)]">{j.jurisdiction}</td>
+                <td className="p-3 text-[var(--text)]">${j.totalWithheld}</td>
+                <td className="p-3 text-[var(--text)]">${j.totalRemitted}</td>
+                <td className="p-3 text-[var(--danger)] font-medium">${j.pendingRemittance}</td>
+                <td className="p-3">
+                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                    j.complianceStatus === 'Compliant'
+                      ? 'bg-emerald-500/15 text-emerald-400'
+                      : 'bg-amber-500/15 text-amber-400'
+                  }`}>
+                    {j.complianceStatus}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {reportData.recommendations?.length > 0 && (
-        <div>
-          <h3>Recommendations & Action Items</h3>
-          <ul>
-            {reportData.recommendations.map((rec: any, idx: number) => (
-              <li key={idx} style={{ color: rec.type === 'action' ? '#d9534f' : '#f0ad4e' }}>
-                <strong>[{rec.jurisdiction}]</strong> {rec.message}
+      {reportData.recommendations && reportData.recommendations.length > 0 && (
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-hi)]/60 p-4">
+          <h3 className="text-sm font-bold text-[var(--text)] mb-2">Recommendations & Action Items</h3>
+          <ul className="space-y-1.5 text-sm">
+            {reportData.recommendations.map((rec: RecommendationItem) => (
+              <li
+                key={`${rec.jurisdiction}-${rec.type}-${rec.message}`}
+                className={rec.type === 'action' ? 'text-[var(--danger)] font-medium' : 'text-amber-400'}
+              >
+                <strong className="text-[var(--text)]">[{rec.jurisdiction}]</strong> {rec.message}
               </li>
             ))}
           </ul>

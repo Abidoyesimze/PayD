@@ -8,13 +8,10 @@ import { ThemeToggle } from './ThemeToggle';
 import { useTranslation } from 'react-i18next';
 import { Breadcrumb } from './Breadcrumb';
 import { NetworkSwitcher } from './NetworkSwitcher';
-import { useNetworkStore } from '../stores/networkStore';
 import { OfflineBanner } from './OfflineBanner';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp';
-
-const APP_VERSION = (import.meta.env.PUBLIC_APP_VERSION as string | undefined)?.trim() ?? '0.0.1';
-const APP_ENV = import.meta.env.MODE;
+import { Footer } from './Footer';
 
 // ── Page Wrapper ───────────────────────
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -25,7 +22,6 @@ const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const AppLayout: React.FC = () => {
   const location = useLocation();
   useTranslation();
-  const { network } = useNetworkStore();
   const { shortcuts, enabled, setEnabled, isHelpOpen, closeHelp } = useKeyboardShortcuts();
 
   return (
@@ -76,49 +72,7 @@ const AppLayout: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer
-        className="flex flex-wrap justify-between items-center gap-2 px-6 py-5 border-t text-xs font-mono text-(--muted) motion-safe:transition-[border-color] motion-safe:duration-(--motion-duration-normal) motion-safe:ease-[var(--motion-ease-in-out)]"
-        style={{ borderColor: 'var(--border-hi)' }}
-      >
-        <span>
-          © {new Date().getFullYear()} PayD — Licensed under the{' '}
-          <a
-            href="http://www.apache.org/licenses/LICENSE-2.0"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-(--accent) rounded outline-none motion-safe:transition-colors motion-safe:duration-(--motion-duration-fast) motion-safe:ease-[var(--motion-ease-out)] hover:underline focus-visible:ring-2 focus-visible:ring-(--accent)/50"
-          >
-            Apache License 2.0
-          </a>
-        </span>
-        <div className="flex items-center gap-2 flex-wrap">
-          <span
-            className="px-1.5 py-0.5 rounded border text-[10px] uppercase tracking-widest"
-            style={{ borderColor: 'var(--border-hi)' }}
-            aria-label={`App version ${APP_VERSION}`}
-          >
-            v{APP_VERSION}
-          </span>
-          <span
-            className={`px-1.5 py-0.5 rounded border text-[10px] uppercase tracking-widest ${
-              APP_ENV === 'production'
-                ? 'border-(--success)/40 text-(--success)'
-                : 'border-(--status-pending)/40 text-(--status-pending)'
-            }`}
-            aria-label={`Environment: ${APP_ENV}`}
-          >
-            {APP_ENV === 'production' ? 'production' : APP_ENV === 'staging' ? 'staging' : 'dev'}
-          </span>
-          <div className="flex items-center gap-1.5" aria-label={`Connected to Stellar ${network}`}>
-            <div
-              className={`w-1.5 h-1.5 rounded-full shadow-[0_0_6px_var(--accent)] ${
-                network === 'TESTNET' ? 'bg-(--status-pending)' : 'bg-(--accent)'
-              }`}
-            />
-            STELLAR · {network}
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       <KeyboardShortcutsHelp
         isOpen={isHelpOpen}

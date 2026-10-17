@@ -40,8 +40,11 @@ import analyticsRoutes from '../analyticsRoutes.js';
 import migrationStatusRoutes from '../migrationStatusRoutes.js';
 import adminAuditRoutes from '../adminAuditRoutes.js';
 import reportAgentRoutes from '../reportAgentRoutes.js';
+import workflowRoutes from '../workflowRoutes.js';
 
 const router = Router();
+
+router.use('/workflows', apiRateLimit(), workflowRoutes);
 
 router.use('/auth', authRateLimit(), authRoutes);
 

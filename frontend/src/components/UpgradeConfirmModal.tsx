@@ -43,6 +43,7 @@ import {
   cancelUpgrade,
 } from '../services/contractUpgrade';
 import { useNotification } from '../hooks/useNotification';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { ContractErrorPanel } from './ContractErrorPanel';
 import { parseContractError } from '../utils/contractErrorParser';
 import { getTxExplorerUrl } from '../utils/stellarExpert';
@@ -224,6 +225,16 @@ export default function UpgradeConfirmModal({
 
   // Polling ref — cleared on unmount or when we reach a terminal step
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(modalRef, {
+    isOpen: true,
+    onClose: () => {
+      if (!['executing', 'simulating'].includes(modal.step)) {
+        void handleCancel();
+      }
+    },
+  });
 
   const clearPoll = useCallback(() => {
     if (pollRef.current) {
@@ -452,17 +463,23 @@ export default function UpgradeConfirmModal({
 
   return (
     <div
+      role="presentation"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
       <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="upgrade-modal-title"
+        tabIndex={-1}
         className="relative w-full max-w-2xl mx-4 bg-surface border border-hi rounded-2xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-hi">
           <div>
-            <h2 className="text-lg font-black tracking-tight">
+            <h2 id="upgrade-modal-title" className="text-lg font-black tracking-tight">
               {t('upgradeModal.upgradeContract')}
             </h2>
             <p className="text-xs text-muted font-mono mt-0.5">{contract.name}</p>
@@ -835,15 +852,18 @@ export default function UpgradeConfirmModal({
                       target="_blank"
                       rel="noopener noreferrer"
                       title={t('contractUpgrade.viewOnStellarExpert')}
+                      aria-label={t('contractUpgrade.viewOnStellarExpert')}
                       className="p-1.5 hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0"
                     >
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
                     </a>
                     <button
                       onClick={() => copyToClipboard(modal.txHash!)}
+                      aria-label={t('upgradeModal.copyTransactionHash', 'Copy transaction hash')}
+                      title={t('upgradeModal.copyTransactionHash', 'Copy transaction hash')}
                       className="p-1.5 hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0"
                     >
-                      <Copy className="w-3.5 h-3.5" />
+                      <Copy className="w-3.5 h-3.5" aria-hidden="true" />
                     </button>
                   </div>
                 </div>
@@ -925,15 +945,18 @@ export default function UpgradeConfirmModal({
                     target="_blank"
                     rel="noopener noreferrer"
                     title={t('contractUpgrade.viewOnStellarExpert')}
+                    aria-label={t('contractUpgrade.viewOnStellarExpert')}
                     className="p-1.5 hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0"
                   >
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
                   </a>
                   <button
                     onClick={() => copyToClipboard(modal.txHash)}
+                    aria-label={t('upgradeModal.copyTransactionHash', 'Copy transaction hash')}
+                    title={t('upgradeModal.copyTransactionHash', 'Copy transaction hash')}
                     className="p-1.5 hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0"
                   >
-                    <Copy className="w-3.5 h-3.5" />
+                    <Copy className="w-3.5 h-3.5" aria-hidden="true" />
                   </button>
                 </div>
               </div>

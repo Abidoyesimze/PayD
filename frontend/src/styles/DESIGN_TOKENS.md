@@ -2,6 +2,24 @@
 
 This document outlines the core Design Token Layer for PayD. It standardizes colors, typography, chart visualization palettes, surfaces, and dark/light mode behavior across all frontend pages and components.
 
+## Mainnet Brand Scale
+
+The shared tokens live in `frontend/src/index.css` so they are available to
+every surface, including CSS modules and Tailwind utilities. Both themes keep
+the same semantic names; only their color and surface values change.
+
+| Group | Tokens |
+| --- | --- |
+| Brand | `--accent` deep blue, `--accent2` teal, `--accent3` bright blue, `--on-accent` |
+| Typography | `--text-xs` through `--text-2xl`, `--text-hero`, `--weight-body` through `--weight-heavy` |
+| Spacing | `--space-1`, `--space-2`, `--space-3`, `--space-4`, `--space-6`, `--space-8`, `--space-12` |
+| Shape | `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-pill` |
+
+Use `.type-display`, `.type-heading`, `.type-body`, and `.type-caption` for
+the reusable typography scale. Primary actions use the shared `Button`
+component and `.btn-primary`, including keyboard focus, active, and disabled
+states.
+
 ## Reference Integration
 
 - **Page**: `frontend/src/pages/PayrollAnalytics.tsx`

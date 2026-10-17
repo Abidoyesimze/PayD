@@ -28,6 +28,7 @@ export const AdvancedSearchFilter: React.FC<AdvancedSearchFilterProps> = ({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(
     () => () => {
@@ -61,6 +62,14 @@ export const AdvancedSearchFilter: React.FC<AdvancedSearchFilterProps> = ({
     });
   };
 
+  const handlePanelKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsExpanded(false);
+      toggleButtonRef.current?.focus();
+    }
+  };
+
   const hasActiveFilters =
     filters.status !== 'All' ||
     filters.department ||
@@ -82,9 +91,11 @@ export const AdvancedSearchFilter: React.FC<AdvancedSearchFilterProps> = ({
     >
       <div className="flex items-center justify-between">
         <button
+          ref={toggleButtonRef}
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
           aria-expanded={isExpanded}
+          aria-controls="advanced-filters-panel"
           className={`flex items-center gap-2 rounded-xl text-sm font-semibold text-[var(--text)] outline-none ${transitionFast} hover:text-[var(--accent)] active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50`}
         >
           <Filter className="h-4 w-4" />
@@ -115,6 +126,10 @@ export const AdvancedSearchFilter: React.FC<AdvancedSearchFilterProps> = ({
 
       {isExpanded && (
         <div
+          id="advanced-filters-panel"
+          role="region"
+          aria-label="Advanced Filters"
+          onKeyDown={handlePanelKeyDown}
           className={`mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 motion-route-in ${transition}`}
         >
           {/* Status Filter */}

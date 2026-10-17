@@ -75,6 +75,7 @@ const NavDropdown: React.FC<NavDropdownProps> = ({
   variant = 'default',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -89,6 +90,12 @@ const NavDropdown: React.FC<NavDropdownProps> = ({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    if (isOpen) {
+      menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+    }
+  }, [isOpen]);
+
   return (
     <div className="relative" ref={containerRef}>
       <button
@@ -96,6 +103,16 @@ const NavDropdown: React.FC<NavDropdownProps> = ({
         aria-haspopup="menu"
         aria-expanded={isOpen}
         onClick={onToggle}
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowDown' && !isOpen) {
+            event.preventDefault();
+            onToggle();
+          }
+          if (event.key === 'Escape' && isOpen) {
+            event.preventDefault();
+            onClose();
+          }
+        }}
         className={linkClass(active || isOpen, variant)}
       >
         <span className="opacity-70" aria-hidden="true">
@@ -112,6 +129,7 @@ const NavDropdown: React.FC<NavDropdownProps> = ({
         <div
           role="menu"
           aria-label={label}
+          ref={menuRef}
           className="absolute right-0 top-[calc(100%+6px)] min-w-52.5 rounded-xl border p-1.5 shadow-(--shadow-lg) z-50 motion-popover"
           style={{ background: 'var(--surface)', borderColor: 'var(--border-hi)' }}
         >
@@ -123,6 +141,12 @@ const NavDropdown: React.FC<NavDropdownProps> = ({
               aria-label={item.ariaLabel}
               title={item.title}
               onClick={onClose}
+              onKeyDown={(event) => {
+                if (event.key === 'Escape') {
+                  event.preventDefault();
+                  onClose();
+                }
+              }}
               className={({ isActive }) => menuItemClass(isActive)}
             >
               <span className="opacity-70" aria-hidden="true">
@@ -141,7 +165,9 @@ const AppNav: React.FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState<'tools' | 'admin' | null>(null);
+  const [openMenu, setOpenMenu] = useState<
+    'payroll' | 'payments' | 'contracts' | 'resources' | null
+  >(null);
   const [isProfileEditorOpen, setIsProfileEditorOpen] = useState(false);
   const [userImageUrl, setUserImageUrl] = useState<string | undefined>(undefined);
   const { address, walletName, isConnecting } = useWallet();
@@ -198,7 +224,7 @@ const AppNav: React.FC = () => {
     imageUrl: userImageUrl,
   };
 
-  const primaryLinks: NavItem[] = [
+  const payrollLinks: NavItem[] = [
     {
       to: '/employer',
       label: t('nav.employer'),
@@ -227,13 +253,7 @@ const AppNav: React.FC = () => {
     },
   ];
 
-  const toolsLinks: NavItem[] = [
-    {
-      to: '/reports',
-      label: t('nav.reports'),
-      ariaLabel: t('nav.reports'),
-      icon: <FileText className="w-4 h-4" />,
-    },
+  const paymentsLinks: NavItem[] = [
     {
       to: '/cross-asset-payment',
       label: t('nav.crossAsset'),
@@ -255,25 +275,50 @@ const AppNav: React.FC = () => {
     },
   ];
 
-  const adminLinks: NavItem[] = [
-    {
-      to: '/admin',
-      label: t('nav.admin'),
-      ariaLabel: t('nav.admin'),
-      icon: <ShieldAlert className="w-4 h-4" />,
-    },
+  const contractsLinks: NavItem[] = [
     {
       to: '/debug',
       label: t('nav.debuggerLabel'),
       ariaLabel: t('nav.debuggerLabel'),
       icon: <Code className="w-4 h-4" />,
     },
+    {
+      to: '/admin',
+      label: t('nav.admin'),
+      ariaLabel: t('nav.admin'),
+      icon: <ShieldAlert className="w-4 h-4" />,
+    },
+  ];
+
+  const resourcesLinks: NavItem[] = [
+    {
+      to: '/reports',
+      label: t('nav.reports'),
+      ariaLabel: t('nav.reports'),
+      icon: <FileText className="w-4 h-4" />,
+    },
+    {
+      to: '/help',
+      label: t('common.help'),
+      ariaLabel: t('common.help'),
+      icon: <HelpCircle className="w-4 h-4" />,
+    },
+    {
+      to: '/rewards',
+      label: t('nav.rewards'),
+      ariaLabel: t('nav.rewards'),
+      icon: <Gift className="w-4 h-4" />,
+    },
   ];
 
   const unreadNotificationCount = 3;
 
-  const toolsActive = toolsLinks.some((item) => location.pathname.startsWith(item.to));
-  const adminActive = adminLinks.some((item) => location.pathname.startsWith(item.to));
+  const groups = [
+    { id: 'payroll' as const, label: t('nav.payrollGroup'), icon: <Briefcase className="w-4 h-4" />, items: payrollLinks },
+    { id: 'payments' as const, label: t('nav.paymentsGroup'), icon: <Wallet className="w-4 h-4" />, items: paymentsLinks },
+    { id: 'contracts' as const, label: t('nav.contractsGroup'), icon: <Layers className="w-4 h-4" />, items: contractsLinks },
+    { id: 'resources' as const, label: t('nav.resourcesGroup'), icon: <HelpCircle className="w-4 h-4" />, items: resourcesLinks },
+  ];
 
   const mobileSectionLinks = (items: NavItem[], variant: 'default' | 'danger' = 'default') =>
     items.map((item) => (
@@ -296,44 +341,19 @@ const AppNav: React.FC = () => {
     <nav className="relative w-full" aria-label={t('nav.primaryNavigation')}>
       <div className="flex items-center justify-between gap-4 px-3 py-2">
         {/* Desktop links */}
-        <div className="hidden lg:flex items-center gap-1">
-          {primaryLinks.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              aria-label={item.ariaLabel}
-              title={item.title}
-              className={({ isActive }) => linkClass(isActive)}
-            >
-              <span className="opacity-70" aria-hidden="true">
-                {item.icon}
-              </span>
-              {item.label}
-            </NavLink>
+        <div className="hidden md:flex items-center gap-1">
+          {groups.map((group) => (
+            <NavDropdown
+              key={group.id}
+              label={group.label}
+              icon={group.icon}
+              items={group.items}
+              isOpen={openMenu === group.id}
+              onToggle={() => setOpenMenu((current) => (current === group.id ? null : group.id))}
+              onClose={() => setOpenMenu((current) => (current === group.id ? null : current))}
+              active={group.items.some((item) => location.pathname.startsWith(item.to))}
+            />
           ))}
-
-          <div className="w-px h-5 bg-(--border-hi) mx-1.5" />
-
-          <NavDropdown
-            label={t('nav.tools')}
-            icon={<Layers className="w-4 h-4" />}
-            items={toolsLinks}
-            isOpen={openMenu === 'tools'}
-            onToggle={() => setOpenMenu((current) => (current === 'tools' ? null : 'tools'))}
-            onClose={() => setOpenMenu((current) => (current === 'tools' ? null : current))}
-            active={toolsActive}
-          />
-
-          <NavDropdown
-            label={t('nav.admin')}
-            icon={<ShieldAlert className="w-4 h-4" />}
-            items={adminLinks}
-            isOpen={openMenu === 'admin'}
-            onToggle={() => setOpenMenu((current) => (current === 'admin' ? null : 'admin'))}
-            onClose={() => setOpenMenu((current) => (current === 'admin' ? null : current))}
-            active={adminActive}
-            variant="danger"
-          />
         </div>
 
         {/* Mobile menu button */}
@@ -344,7 +364,7 @@ const AppNav: React.FC = () => {
           aria-controls="mobile-navigation-drawer"
           aria-haspopup="dialog"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="lg:hidden p-2 rounded-md text-(--text) outline-none motion-safe:transition-colors motion-safe:duration-(--motion-duration-fast) motion-safe:ease-[var(--motion-ease-out)] hover:bg-(--surface-hi) focus-visible:ring-2 focus-visible:ring-(--accent)/50 active:scale-95"
+          className="md:hidden p-2 rounded-md text-(--text) outline-none motion-safe:transition-colors motion-safe:duration-(--motion-duration-fast) motion-safe:ease-[var(--motion-ease-out)] hover:bg-(--surface-hi) focus-visible:ring-2 focus-visible:ring-(--accent)/50 active:scale-95"
         >
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -437,7 +457,7 @@ const AppNav: React.FC = () => {
         <>
           {/* Backdrop */}
           <div
-            className={`lg:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm ${prefersReducedMotion ? '' : 'motion-popover'}`}
+            className={`md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm ${prefersReducedMotion ? '' : 'motion-fade-in'}`}
             aria-hidden="true"
             onClick={() => setMobileOpen(false)}
           />
@@ -447,24 +467,21 @@ const AppNav: React.FC = () => {
             role="dialog"
             aria-modal="true"
             aria-label={t('nav.navigationMenu')}
-            className={`lg:hidden fixed left-0 right-0 top-(--header-h) z-50 border-b shadow-xl ${prefersReducedMotion ? '' : 'motion-popover'}`}
+            className={`md:hidden fixed left-0 top-(--header-h) bottom-0 z-50 w-[min(22rem,calc(100vw-2rem))] border-r shadow-xl ${prefersReducedMotion ? '' : 'motion-drawer-in'}`}
             style={{
               background: 'var(--surface)',
               borderColor: 'var(--border-hi)',
             }}
           >
             <nav className="flex flex-col gap-1 px-4 py-4 max-h-[calc(100dvh-var(--header-h))] overflow-y-auto">
-              {mobileSectionLinks(primaryLinks)}
-
-              <div className="mt-3 mb-1 px-3 text-[10px] font-semibold uppercase tracking-widest text-(--muted)">
-                {t('nav.tools')}
-              </div>
-              {mobileSectionLinks(toolsLinks)}
-
-              <div className="mt-3 mb-1 px-3 text-[10px] font-semibold uppercase tracking-widest text-red-400/80">
-                {t('nav.admin')}
-              </div>
-              {mobileSectionLinks(adminLinks, 'danger')}
+              {groups.map((group) => (
+                <div key={group.id}>
+                  <div className="mt-3 mb-1 px-3 text-[10px] font-semibold uppercase tracking-widest text-(--muted)">
+                    {group.label}
+                  </div>
+                  {mobileSectionLinks(group.items)}
+                </div>
+              ))}
 
               <div className="w-full h-px bg-(--border-hi) my-2" />
 

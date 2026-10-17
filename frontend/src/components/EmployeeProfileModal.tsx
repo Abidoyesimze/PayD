@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { X, User, Mail, Phone, Briefcase, CreditCard } from 'lucide-react';
 import { FormField } from './FormField';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export interface EmployeeProfileData {
   id?: string;
@@ -48,6 +49,9 @@ export const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
   const { t } = useTranslation();
   const prefersReducedMotion = useReducedMotion();
   const transitionDuration = prefersReducedMotion ? 0 : 0.2;
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, { isOpen, onClose });
+
   const [formData, setFormData] = useState<EmployeeProfileData>(
     employee || {
       firstName: '',
@@ -75,6 +79,9 @@ export const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
       {isOpen ? (
         <motion.div
           role="presentation"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onClose();
+          }}
           initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: prefersReducedMotion ? 1 : 0 }}
@@ -82,9 +89,11 @@ export const EmployeeProfileModal: React.FC<EmployeeProfileModalProps> = ({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
         >
           <motion.div
+            ref={modalRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="employee-profile-title"
+            tabIndex={-1}
             initial={{
               opacity: prefersReducedMotion ? 1 : 0,
               scale: prefersReducedMotion ? 1 : 0.96,

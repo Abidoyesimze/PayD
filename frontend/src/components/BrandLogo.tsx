@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useTheme } from '../hooks/useTheme';
+import React, { useState, use } from 'react';
+import { ThemeContext } from '../hooks/useTheme';
 import { sanitizeLogoUrl, sanitizeOrgName } from '../utils/brand';
 
 /**
@@ -7,7 +7,8 @@ import { sanitizeLogoUrl, sanitizeOrgName } from '../utils/brand';
  * (#1505), otherwise the default PayD wordmark.
  */
 export const BrandLogo: React.FC = () => {
-  const { brandConfig } = useTheme();
+  const themeContext = use(ThemeContext);
+  const brandConfig = themeContext?.brandConfig ?? {};
   const logoUrl = sanitizeLogoUrl(brandConfig.logoUrl);
   const orgName = sanitizeOrgName(brandConfig.orgName);
   const [logoFailed, setLogoFailed] = useState(false);

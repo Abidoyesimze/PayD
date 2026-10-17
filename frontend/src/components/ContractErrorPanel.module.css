@@ -92,8 +92,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .chevron {
-    transition: none;
+  .container,
+  .header,
+  .headerActions,
+  .clearBtn,
+  .chevron,
+  .copyBtn {
+    transition: none !important;
   }
 }
 

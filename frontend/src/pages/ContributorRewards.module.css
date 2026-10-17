@@ -9,3 +9,9 @@
     0 20px 40px -20px rgba(0, 0, 0, 0.5),
     0 0 20px color-mix(in srgb, var(--accent) 10%, transparent);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .rewardCard {
+    transition: none !important;
+  }
+}

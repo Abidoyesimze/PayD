@@ -91,8 +91,9 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex min-h-[80vh] flex-col px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-16 lg:gap-24">
+    <main className="relative flex min-h-[80vh] flex-col overflow-hidden px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-0 h-[32rem] bg-[radial-gradient(circle_at_15%_0%,color-mix(in_srgb,var(--accent3)_13%,transparent),transparent_42%),radial-gradient(circle_at_85%_10%,color-mix(in_srgb,var(--accent2)_12%,transparent),transparent_38%)]" />
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col gap-16 lg:gap-24">
         <OnboardingBanner />
 
         <section
@@ -111,7 +112,7 @@ export default function Home() {
             <div className="space-y-5">
               <h1
                 id="home-hero-title"
-                className="text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
+                className="max-w-3xl text-4xl font-extrabold leading-[1.04] tracking-[-0.04em] sm:text-5xl lg:text-7xl"
               >
                 {t('home.titleLine1Prefix')}{' '}
                 <span className="text-accent">{t('home.titleLine1Highlight')}</span>
@@ -148,6 +149,37 @@ export default function Home() {
               >
                 {t('home.ctaViewEmployees')}
               </Button>
+            </div>
+
+            <div
+              className="grid grid-cols-3 gap-3 border-y border-hi py-5 text-left"
+              role="region"
+              aria-label="Trust signals"
+            >
+              <div>
+                <p className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
+                  {t('home.statSettlement')}
+                </p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted sm:text-xs">
+                  {t('home.statSettlementLabel')}
+                </p>
+              </div>
+              <div className="border-l border-hi pl-3">
+                <p className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
+                  {t('home.statAvailability')}
+                </p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted sm:text-xs">
+                  {t('home.statAvailabilityLabel')}
+                </p>
+              </div>
+              <div className="border-l border-hi pl-3">
+                <p className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
+                  {t('home.statNetwork')}
+                </p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-muted sm:text-xs">
+                  {t('home.statNetworkLabel')}
+                </p>
+              </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3" role="region" aria-label="Quick features">

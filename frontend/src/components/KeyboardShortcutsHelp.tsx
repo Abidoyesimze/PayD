@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Keyboard } from 'lucide-react';
 import type { KeyboardShortcut } from '../hooks/useKeyboardShortcuts';
 import { formatShortcutKey } from '../utils/keyboardShortcutFormat';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import styles from './KeyboardShortcutsHelp.module.css';
 
 export interface KeyboardShortcutsHelpProps {
@@ -23,11 +24,7 @@ export const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({
   const { t } = useTranslation();
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      modalRef.current?.focus();
-    }
-  }, [isOpen]);
+  useFocusTrap(modalRef, { isOpen, onClose });
 
   if (!isOpen) return null;
 

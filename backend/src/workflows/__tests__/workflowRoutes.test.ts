@@ -1,0 +1,80 @@
+jest.mock('../../config/database.js', () => ({ pool: { query: jest.fn() } }));
+jest.mock('../../utils/logger.js', () => ({
+  __esModule: true,
+  default: { info: jest.fn(), warn: jest.fn(), error: jest.fn() },
+}));
+jest.mock('../../utils/tracing.js', () => ({
+  withSpan: jest.fn((_name, _attrs, operation) => operation()),
+}));
+jest.mock('../../services/stellarService.js', () => ({ StellarService: {} }));
+jest.mock('../../middlewares/auth.js', () => ({
+  __esModule: true,
+  default: (req: import('express').Request, res: import('express').Response, next: () => void) => {
+    if (!req.headers.authorization)
+      return res.status(401).json({ error: 'Authentication required' });
+    req.user =
+      req.headers.authorization === 'Bearer employee'
+        ? { id: 2, organizationId: 1, role: 'EMPLOYEE' }
+        : { id: 1, organizationId: 1, role: 'EMPLOYER' };
+    next();
+  },
+}));
+
+import express from 'express';
+import request from 'supertest';
+import router from '../../routes/workflowRoutes.js';
+import { pool } from '../../config/database.js';
+
+const app = express();
+app.use(express.json());
+app.use('/workflows', router);
+
+beforeEach(() => jest.clearAllMocks());
+
+test('workflow endpoints require authentication', async () => {
+  expect((await request(app).get('/workflows/rewards')).status).toBe(401);
+  expect(pool.query).not.toHaveBeenCalled();
+});
+
+test('employees cannot read organization reward payouts', async () => {
+  expect(
+    (await request(app).get('/workflows/rewards').set('Authorization', 'Bearer employee')).status
+  ).toBe(403);
+  expect(pool.query).not.toHaveBeenCalled();
+});
+
+test('organization is derived from the verified context and signed envelopes stay private', async () => {
+  (pool.query as jest.Mock).mockResolvedValueOnce({
+    rows: [
+      {
+        id: 'reward',
+        status: 'submitted',
+        data: { signedXdr: 'private-envelope', amount: '100', txHash: 'payment-hash' },
+      },
+    ],
+  });
+  const response = await request(app)
+    .get('/workflows/rewards?organizationId=2')
+    .set('Authorization', 'Bearer employer');
+  expect(response.status).toBe(200);
+  expect((pool.query as jest.Mock).mock.calls[0][1]).toEqual([1, 'contributor-reward']);
+  expect(response.body.rewards[0].data).toEqual({ amount: '100', txHash: 'payment-hash' });
+});
+
+test('strict input validation rejects attempts to supply workflow authorization', async () => {
+  const response = await request(app)
+    .post('/workflows/trustline/setup')
+    .set('Authorization', 'Bearer employee')
+    .send({ employeeId: 1, assetCode: 'XLM', organizationId: 2, role: 'EMPLOYER' });
+  expect(response.status).toBe(400);
+  expect(pool.query).not.toHaveBeenCalled();
+});
+
+test('invalid review requests do not echo signing secrets', async () => {
+  const response = await request(app)
+    .post('/workflows/freeze/appeals/3e811b6d-de98-44ef-8fbe-0e52ac324d9c/review')
+    .set('Authorization', 'Bearer employer')
+    .send({ decision: 'wrong', issuerSecret: 'private-signing-key' });
+  expect(response.status).toBe(400);
+  expect(JSON.stringify(response.body)).not.toContain('private-signing-key');
+});
